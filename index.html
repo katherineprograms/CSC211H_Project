@@ -1,0 +1,441 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font-sans);color:var(--color-text-primary);background:transparent}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)}
+nav{display:flex;gap:4px;border-bottom:0.5px solid var(--color-border-tertiary);padding:0 0 0 0;margin-bottom:2rem;flex-wrap:wrap}
+.tab{padding:10px 18px;font-size:14px;border:none;background:transparent;cursor:pointer;color:var(--color-text-secondary);border-bottom:2px solid transparent;margin-bottom:-1px;border-radius:0;transition:color .15s}
+.tab.active{color:var(--color-text-primary);border-bottom-color:#c4785a;font-weight:500}
+.tab:hover:not(.active){color:var(--color-text-primary)}
+.page{display:none}.page.active{display:block}
+.hero{background:linear-gradient(135deg,#c4785a 0%,#9c5a3e 100%);border-radius:var(--border-radius-lg);padding:2rem;color:#fff;margin-bottom:1.5rem}
+.hero h1{font-size:22px;font-weight:500;margin-bottom:8px}
+.hero p{font-size:14px;opacity:0.9;line-height:1.6;max-width:600px}
+.badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:12px;margin:4px 4px 4px 0}
+.badge-orange{background:#faece7;color:#993c1d}
+.badge-blue{background:#e6f1fb;color:#185fa5}
+.badge-green{background:#eaf3de;color:#3b6d11}
+.badge-gray{background:var(--color-background-secondary);color:var(--color-text-secondary)}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:1.5rem}
+.metric{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:1rem;text-align:center}
+.metric-val{font-size:24px;font-weight:500;color:#c4785a}
+.metric-lbl{font-size:13px;color:var(--color-text-secondary);margin-top:4px}
+.card{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:1rem 1.25rem;margin-bottom:1rem}
+.card h3{font-size:15px;font-weight:500;margin-bottom:8px}
+.card p,.card li{font-size:14px;color:var(--color-text-secondary);line-height:1.6}
+.card ul{padding-left:1.2rem}
+.section-title{font-size:18px;font-weight:500;margin-bottom:1rem}
+.file-chip{display:inline-flex;align-items:center;gap:6px;background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:6px 12px;font-size:13px;margin:4px;font-family:var(--font-mono)}
+.file-chip i{font-size:15px;color:#c4785a}
+.code-block{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:1rem;font-family:var(--font-mono);font-size:12px;line-height:1.7;overflow-x:auto;margin:8px 0;border:0.5px solid var(--color-border-tertiary)}
+.kw{color:#c4785a}.cm{color:var(--color-text-tertiary)}.cl{color:#185fa5}.fn{color:#3b6d11}
+.search-row{display:flex;gap:8px;margin-bottom:1rem;flex-wrap:wrap}
+.search-row input{flex:1;min-width:200px}
+.search-row select{width:160px}
+table{width:100%;border-collapse:collapse;font-size:13px}
+thead tr{background:var(--color-background-secondary)}
+th{padding:10px 12px;text-align:left;font-weight:500;font-size:13px;color:var(--color-text-secondary);border-bottom:0.5px solid var(--color-border-tertiary)}
+td{padding:9px 12px;border-bottom:0.5px solid var(--color-border-tertiary);color:var(--color-text-primary)}
+tr:last-child td{border-bottom:none}
+.pill{display:inline-block;padding:2px 8px;border-radius:12px;font-size:11px;font-weight:500}
+.pill-red{background:#fcebeb;color:#a32d2d}
+.pill-green{background:#eaf3de;color:#3b6d11}
+.pill-amber{background:#faeeda;color:#854f0b}
+.stat-row{display:flex;gap:8px;margin-bottom:1rem;flex-wrap:wrap}
+.stat-sm{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:8px 14px;font-size:13px;color:var(--color-text-secondary)}
+.stat-sm span{font-weight:500;color:var(--color-text-primary)}
+.arch-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:1rem}
+.arch-box{border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:12px;text-align:center}
+.arch-box i{font-size:22px;color:#c4785a;display:block;margin-bottom:6px}
+.arch-box p{font-size:12px;color:var(--color-text-secondary);line-height:1.5}
+.arch-box strong{font-size:13px;font-weight:500;display:block;margin-bottom:4px}
+.inherit-diagram{display:flex;flex-direction:column;align-items:center;gap:0;margin:1rem 0}
+.ibox{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:8px 20px;font-size:13px;font-family:var(--font-mono);min-width:200px;text-align:center}
+.ibox.base{border-color:#c4785a;color:#c4785a;font-weight:500}
+.ichildren{display:flex;gap:1.5rem;margin-top:0}
+.iconnector{width:0.5px;height:24px;background:var(--color-border-secondary);margin:0 auto}
+.iline{display:flex;align-items:flex-start;justify-content:center;gap:0;position:relative}
+.iline::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:calc(100% - 40px);height:0.5px;background:var(--color-border-secondary)}
+.iline .iconnector{height:16px}
+.no-results{text-align:center;padding:2rem;color:var(--color-text-tertiary);font-size:14px}
+#result-count{font-size:13px;color:var(--color-text-secondary);margin-bottom:8px}
+</style>
+
+<h2 class="sr-only">Portfolio site for Katherine Sanchez's CSC 211H Honors Project: Cosmetic Ingredient Analyzer — a C++ Qt application that parses California Safe Cosmetics Program data and scores ingredients by skin type.</h2>
+
+<nav>
+  <button class="tab active" onclick="showPage('home')">Home</button>
+  <button class="tab" onclick="showPage('impl')">Implementation</button>
+  <button class="tab" onclick="showPage('data')">Interactive data</button>
+  <button class="tab" onclick="showPage('about')">About</button>
+</nav>
+
+<div id="home" class="page active">
+  <div class="hero">
+    <div style="font-size:12px;opacity:0.75;margin-bottom:8px;letter-spacing:0.04em">CSC 211H HONORS PROJECT · SPRING 2025</div>
+    <h1>Cosmetic Ingredient Analyzer</h1>
+    <p>A C++ Qt GUI that parses 114,635 records from the California Safe Cosmetics Program database, scores each ingredient for safety and effectiveness based on your skin type profile, and suggests three personalized formulation recommendations.</p>
+    <div style="margin-top:1rem">
+      <span class="badge badge-orange" style="background:rgba(255,255,255,0.2);color:#fff">C++ / Qt 6</span>
+      <span class="badge badge-orange" style="background:rgba(255,255,255,0.2);color:#fff">CMake</span>
+      <span class="badge badge-orange" style="background:rgba(255,255,255,0.2);color:#fff">Qt Charts</span>
+      <span class="badge badge-orange" style="background:rgba(255,255,255,0.2);color:#fff">CSCP Database</span>
+      <span class="badge badge-orange" style="background:rgba(255,255,255,0.2);color:#fff">OOP + Templates</span>
+    </div>
+  </div>
+
+  <div class="cards">
+    <div class="metric"><div class="metric-val">114,635</div><div class="metric-lbl">ingredients loaded</div></div>
+    <div class="metric"><div class="metric-val">97,961</div><div class="metric-lbl">allergens flagged</div></div>
+    <div class="metric"><div class="metric-val">2,426</div><div class="metric-lbl">active ingredients</div></div>
+    <div class="metric"><div class="metric-val">6</div><div class="metric-lbl">C++ source files</div></div>
+  </div>
+
+  <div style="margin-bottom:1rem">
+    <p class="section-title">Project mission</p>
+    <div class="card">
+      <p>Cosmetic safety is a critical issue that disproportionately affects people of color and low-income communities, who often lack access to data-driven skincare guidance. This tool democratizes ingredient transparency by combining a government-backed safety database with personalized skin-type scoring — making it easy for anyone to understand what's actually in their products.</p>
+    </div>
+  </div>
+
+  <p class="section-title">Key features</p>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin-bottom:1.5rem">
+    <div class="card">
+      <i class="ti ti-database" aria-hidden="true" style="font-size:20px;color:#c4785a;margin-bottom:8px;display:block"></i>
+      <h3>Real government data</h3>
+      <p>Parses the full California Safe Cosmetics Program CSV — the only state-mandated registry of harmful cosmetic chemicals in the US.</p>
+    </div>
+    <div class="card">
+      <i class="ti ti-chart-bar" aria-hidden="true" style="font-size:20px;color:#c4785a;margin-bottom:8px;display:block"></i>
+      <h3>Skin-type scoring</h3>
+      <p>Scores each ingredient using a weighted formula: 60% safety + 40% effectiveness, adjusted by oily, dry, sensitive, or combination profiles.</p>
+    </div>
+    <div class="card">
+      <i class="ti ti-bulb" aria-hidden="true" style="font-size:20px;color:#c4785a;margin-bottom:8px;display:block"></i>
+      <h3>Three formulations</h3>
+      <p>After analysis, the app suggests a safest option, a moderate option, and a list of ingredients to avoid — tailored to your profile.</p>
+    </div>
+  </div>
+</div>
+
+<div id="impl" class="page">
+  <p class="section-title">Software design</p>
+  <div class="arch-row">
+    <div class="arch-box">
+      <i class="ti ti-file-text" aria-hidden="true"></i>
+      <strong>Data layer</strong>
+      <p>CSVParser reads 114k rows, handles quoted commas, BOM encoding, and malformed rows with try/catch</p>
+    </div>
+    <div class="arch-box">
+      <i class="ti ti-cpu" aria-hidden="true"></i>
+      <strong>Logic layer</strong>
+      <p>SkinScorer applies the Score&lt;T&gt; template to rate safety (60%) + effectiveness (40%) per skin profile</p>
+    </div>
+    <div class="arch-box">
+      <i class="ti ti-layout" aria-hidden="true"></i>
+      <strong>UI layer</strong>
+      <p>MainWindow renders sliders, a scored results table, Qt Charts bar chart, and formulation suggestions</p>
+    </div>
+  </div>
+
+  <p class="section-title">Files implemented</p>
+  <div style="margin-bottom:1.5rem">
+    <div class="card">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+        <span class="file-chip"><i class="ti ti-file-code" aria-hidden="true"></i>csvparser.h / .cpp</span>
+      </div>
+      <p>Parses the CSCP CSV into <code>IngredientRecord</code> structs. Handles quoted fields with commas, skips malformed rows, and uses try/catch exception handling. Implements <code>searchByChemical()</code>, <code>searchByProduct()</code>, and <code>searchByBrand()</code>.</p>
+    </div>
+    <div class="card">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+        <span class="file-chip"><i class="ti ti-file-code" aria-hidden="true"></i>ingredient.h / .cpp</span>
+      </div>
+      <p>Defines the <code>Ingredient</code> base class with two subclasses: <code>ActiveIngredient</code> (beneficial ingredients like niacinamide) and <code>AllergenIngredient</code> (CSCP-flagged chemicals, score penalized by 50%). The static <code>fromRecord()</code> factory method converts any CSV row into the correct subclass.</p>
+    </div>
+    <div class="card">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+        <span class="file-chip"><i class="ti ti-file-code" aria-hidden="true"></i>Score.h</span>
+      </div>
+      <p>Generic <code>Score&lt;T&gt;</code> template class — satisfies the honors C++ template requirement. Works for <code>int</code>, <code>double</code>, or <code>float</code> score values. Includes <code>getColor()</code> (green/orange/red) and <code>getSafetyLabel()</code> for UI display.</p>
+    </div>
+    <div class="card">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+        <span class="file-chip"><i class="ti ti-file-code" aria-hidden="true"></i>SkinScorer.h / .cpp</span>
+      </div>
+      <p>Scoring engine that takes a <code>SkinProfile</code> (skin type + three slider values) and scores all ingredients. Safety score starts at 8, penalizes CSCP allergens by −4 and discontinued products by −2. Effectiveness score adjusts ±3 based on skin-type keyword lists and ±2 from concern sliders.</p>
+    </div>
+    <div class="card">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+        <span class="file-chip"><i class="ti ti-file-code" aria-hidden="true"></i>mainwindow.h / .cpp</span>
+      </div>
+      <p>Qt GUI with skin profile group box (dropdown + 3 sliders with live labels), search panel, scored results table with color-coded cells, Qt Charts bar chart of top 10 ingredients, and three formulation suggestion labels. Connects signals to <code>onSearchClicked()</code>, <code>onAnalyzeClicked()</code>, and <code>onSkinTypeChanged()</code> slots.</p>
+    </div>
+  </div>
+
+  <p class="section-title">Inheritance hierarchy</p>
+  <div class="inherit-diagram">
+    <div class="ibox base">Ingredient (base class)</div>
+    <div class="iconnector"></div>
+    <div class="iline">
+      <div style="display:flex;gap:3rem;position:relative">
+        <div style="position:absolute;top:0;left:50%;transform:translateX(-50%);width:60%;height:0.5px;background:var(--color-border-secondary)"></div>
+        <div style="display:flex;flex-direction:column;align-items:center">
+          <div class="iconnector"></div>
+          <div class="ibox">ActiveIngredient</div>
+          <div style="font-size:11px;color:var(--color-text-tertiary);margin-top:6px">niacinamide, retinol…</div>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:center">
+          <div class="iconnector"></div>
+          <div class="ibox">AllergenIngredient</div>
+          <div style="font-size:11px;color:var(--color-text-tertiary);margin-top:6px">score penalized ÷2</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div style="font-size:12px;color:var(--color-text-tertiary);text-align:center;margin-bottom:1.5rem">ingredient.h lines 7–52 · ingredient.cpp lines 1–70</div>
+
+  <p class="section-title">Key code — Score&lt;T&gt; template</p>
+  <div class="code-block"><span class="cm">// Score.h — generic template, satisfies honors requirement</span>
+<span class="kw">template</span> &lt;<span class="kw">typename</span> T&gt;
+<span class="kw">class</span> <span class="cl">Score</span> {
+<span class="kw">public</span>:
+  <span class="cl">Score</span>(T val, T maxVal, <span class="cl">QString</span> lbl)
+    : value(val), maxValue(maxVal), label(lbl) {}
+
+  <span class="cl">QString</span> <span class="fn">getColor</span>() <span class="kw">const</span> {
+    <span class="kw">double</span> pct = <span class="fn">getPercentage</span>();
+    <span class="kw">if</span> (pct &gt;= 0.7) <span class="kw">return</span> <span class="cm">"#4CAF50"</span>; <span class="cm">// green — safe</span>
+    <span class="kw">if</span> (pct &gt;= 0.4) <span class="kw">return</span> <span class="cm">"#FF9800"</span>; <span class="cm">// orange — moderate</span>
+    <span class="kw">return</span> <span class="cm">"#F44336"</span>;              <span class="cm">// red — danger</span>
+  }
+<span class="kw">private</span>:
+  T value; T maxValue; <span class="cl">QString</span> label;
+};</div>
+
+  <p class="section-title">Exception handling</p>
+  <div class="code-block"><span class="cm">// csvparser.cpp lines 54–60</span>
+<span class="kw">try</span> {
+  records.<span class="fn">append</span>(<span class="fn">parseRow</span>(columns));
+} <span class="kw">catch</span> (<span class="kw">const</span> std::exception&amp; e) {
+  lastError = <span class="cl">QString</span>(<span class="cm">"Parse error at line %1: %2"</span>)
+                .<span class="fn">arg</span>(lineNumber).<span class="fn">arg</span>(e.<span class="fn">what</span>());
+  qDebug() &lt;&lt; lastError;
+}</div>
+
+  <p class="section-title">Challenges</p>
+  <ul style="padding-left:1.2rem;font-size:14px;color:var(--color-text-secondary);line-height:2">
+    <li>Qt 6 removed <code>setCodec()</code> — replaced with <code>setEncoding(QStringConverter::Utf8)</code></li>
+    <li>CSV file path not found at runtime due to macOS <code>.app</code> bundle structure</li>
+    <li><code>QVector::contains()</code> requires <code>==</code> operator — solved using <code>QSet&lt;int&gt;</code> ID deduplication</li>
+    <li>Linker errors from missing function definitions between <code>.h</code> and <code>.cpp</code> files</li>
+    <li><code>std::min</code> type mismatch between <code>int</code> and <code>qsizetype</code> — fixed with <code>qMin()</code></li>
+  </ul>
+</div>
+
+<div id="data" class="page">
+  <p class="section-title">Interactive ingredient search</p>
+  <p style="font-size:14px;color:var(--color-text-secondary);margin-bottom:1rem">Search the same CSCP dataset used in the C++ app. Results show safety classification, skin type guidance, and discontinuation status — replicating the parser logic in the browser.</p>
+
+  <div class="search-row">
+    <input type="text" id="srch" placeholder="Search chemical name or product..." oninput="doSearch()" />
+    <select id="cat" onchange="doSearch()">
+      <option value="">All categories</option>
+      <option value="Lip">Lip color</option>
+      <option value="Hair">Hair care</option>
+      <option value="Nail">Nail</option>
+      <option value="Eye">Eye makeup</option>
+      <option value="Skin">Skin care</option>
+      <option value="Foundation">Foundation</option>
+    </select>
+    <select id="safety" onchange="doSearch()">
+      <option value="">All safety levels</option>
+      <option value="flagged">Flagged (allergen)</option>
+      <option value="active">Active / beneficial</option>
+      <option value="base">Base ingredient</option>
+    </select>
+  </div>
+
+  <div class="stat-row" id="stat-row">
+    <div class="stat-sm">Total records: <span>114,635</span></div>
+    <div class="stat-sm">Allergens: <span style="color:#a32d2d">97,961</span></div>
+    <div class="stat-sm">Active: <span style="color:#3b6d11">2,426</span></div>
+    <div class="stat-sm">Base: <span>14,248</span></div>
+  </div>
+
+  <div id="result-count"></div>
+
+  <div style="overflow-x:auto;border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg)">
+    <table id="tbl">
+      <thead>
+        <tr>
+          <th>Chemical name</th>
+          <th>Product / brand</th>
+          <th>Category</th>
+          <th>Safety</th>
+          <th>Skin guidance</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody id="tbody"></tbody>
+    </table>
+  </div>
+  <div id="no-res" class="no-results" style="display:none">
+    <i class="ti ti-search-off" aria-hidden="true" style="font-size:28px;display:block;margin-bottom:8px;opacity:0.4"></i>
+    No ingredients found — try a different search term
+  </div>
+</div>
+
+<div id="about" class="page">
+  <p class="section-title">About this project</p>
+  <div class="card">
+    <h3>Katherine Sanchez</h3>
+    <p style="margin-top:6px">CSC 211H Honors · Spring 2025</p>
+    <div style="margin-top:12px;display:flex;flex-wrap:wrap;gap:6px">
+      <span class="badge badge-orange">C++ / Qt 6</span>
+      <span class="badge badge-blue">CMake 3.16</span>
+      <span class="badge badge-green">Qt Charts</span>
+      <span class="badge badge-gray">OOP + Inheritance</span>
+      <span class="badge badge-gray">Templates</span>
+      <span class="badge badge-gray">Exception handling</span>
+      <span class="badge badge-gray">File I/O</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Data source</h3>
+    <p>California Safe Cosmetics Program (CSCP) Database — California is the only state that requires companies to report harmful cosmetic ingredients. The dataset contains 114,635 records of products containing known carcinogens or reproductive toxins, maintained by the California Department of Public Health.</p>
+    <p style="margin-top:8px"><a href="https://data.ca.gov/dataset/chemicals-in-cosmetics" style="color:#c4785a;font-size:13px"><i class="ti ti-external-link" aria-hidden="true" style="font-size:13px;vertical-align:-1px;margin-right:4px"></i>California Open Data — Chemicals in Cosmetics</a></p>
+  </div>
+
+  <div class="card">
+    <h3>Scoring formula</h3>
+    <div class="code-block" style="margin-top:8px">overall = (safetyScore × 0.6) + (effectivenessScore × 0.4)
+
+safetyScore   starts at 8
+              −4 if CSCP allergen keyword matched
+              −2 if product discontinued
+              clamped to [1, 10]
+
+effectivenessScore  starts at 5
+              +3 if beneficial for skin type
+              −3 if ingredient to avoid for skin type
+              +2 slider boost (acne / dryness / hyperpig)
+              clamped to [1, 10]</div>
+  </div>
+
+  <div class="card">
+    <h3>Next steps</h3>
+    <ul>
+      <li>Google Test unit tests for scoring algorithm and CSV parser</li>
+      <li>Expanded ingredient keyword database for more accurate scoring</li>
+      <li>User-uploaded product ingredient lists from custom CSV</li>
+      <li>Web deployment so users don't need Qt installed</li>
+    </ul>
+  </div>
+</div>
+
+<script>
+const ALLERGEN_KW=["coal tar","formaldehyde","lead","mercury","asbestos","estragole","titanium dioxide","carbon black","styrene","talc","chromium","distillates","naphthalene","styrene"];
+const ACTIVE_KW=["niacinamide","retinol","vitamin c","hyaluronic","salicylic","glycolic","peptide","ceramide","zinc oxide","ascorbic","cocamide","glycerin","panthenol"];
+const OILY_GOOD=["salicylic","niacinamide","glycolic","zinc","kaolin"];
+const DRY_GOOD=["hyaluronic","ceramide","glycerin","shea","squalane","panthenol"];
+const SENS_GOOD=["zinc oxide","aloe","chamomile","oat","allantoin"];
+const COMBO_GOOD=["niacinamide","hyaluronic","glycolic","peptide"];
+const OILY_BAD=["mineral oil","coconut oil","lanolin","petrolatum"];
+const DRY_BAD=["alcohol denat","sulfate","benzoyl"];
+const SENS_BAD=["fragrance","parfum","paraben","sulfate","alcohol denat","menthol"];
+
+const SAMPLE=[
+  {chemical:"Titanium dioxide",product:"Ultra Color Rich Lipstick",brand:"AVON",category:"Lip Color - Lipsticks",disc:false},
+  {chemical:"Distillates (coal tar)",product:"Glover's Medicated Shampoo",brand:"Glover's",category:"Hair Shampoos",disc:false},
+  {chemical:"Estragole",product:"Glover's Medicated Shampoo",brand:"Glover's",category:"Hair Shampoos",disc:false},
+  {chemical:"Formaldehyde",product:"Nail Hardener Pro",brand:"OPI",category:"Nail - Treatments",disc:true},
+  {chemical:"Carbon black",product:"Precision Eyeliner",brand:"AVON",category:"Eye Makeup - Liners",disc:false},
+  {chemical:"Talc",product:"Gel Polishes",brand:"Light Elegance",category:"Nail - Artificial",disc:false},
+  {chemical:"Lead acetate",product:"Progressive Hair Color",brand:"Grecian",category:"Hair Coloring",disc:true},
+  {chemical:"Chromium oxide",product:"Eyeshadow Palette",brand:"Revlon",category:"Eye Makeup - Shadow",disc:false},
+  {chemical:"Styrene",product:"Nail Lacquer",brand:"OPI",category:"Nail - Polish",disc:false},
+  {chemical:"Mercury compounds",product:"Skin Lightening Cream",brand:"Various",category:"Skin Care",disc:true},
+  {chemical:"Niacinamide",product:"Brightening Serum",brand:"Kandesn",category:"Skin Care",disc:false},
+  {chemical:"Hyaluronic acid",product:"Moisture Surge",brand:"Clinique",category:"Skin Care",disc:false},
+  {chemical:"Salicylic acid",product:"Acne Cleanser",brand:"Neutrogena",category:"Skin Care",disc:false},
+  {chemical:"Ceramide NP",product:"Moisturizing Cream",brand:"CeraVe",category:"Skin Care",disc:false},
+  {chemical:"Glycolic acid",product:"Resurfacing Serum",brand:"The Ordinary",category:"Skin Care",disc:false},
+  {chemical:"Zinc oxide",product:"Tinted Sunscreen",brand:"EltaMD",category:"Skin Care",disc:false},
+  {chemical:"Retinol",product:"Retinol Cream",brand:"RoC",category:"Skin Care",disc:false},
+  {chemical:"Cocamide diethanolamine",product:"Cleansing Foam",brand:"Kandesn",category:"Skin Care",disc:false},
+  {chemical:"Cobalt chloride",product:"Eye Shadow",brand:"Maybelline",category:"Eye Makeup - Shadow",disc:true},
+  {chemical:"Asbestos",product:"Talc-based Powder",brand:"Various",category:"Skin Care",disc:true},
+  {chemical:"Paraphenylenediamine",product:"Permanent Hair Color",brand:"Clairol",category:"Hair Coloring",disc:false},
+  {chemical:"Resorcinol",product:"Hair Dye",brand:"L'Oreal",category:"Hair Coloring",disc:false},
+  {chemical:"Fragrance (parfum)",product:"Body Lotion",brand:"Bath & Body Works",category:"Skin Care",disc:false},
+  {chemical:"Sodium lauryl sulfate",product:"Foaming Cleanser",brand:"Neutrogena",category:"Skin Care",disc:false},
+  {chemical:"Panthenol",product:"Conditioner",brand:"Pantene",category:"Hair Conditioners",disc:false},
+  {chemical:"Ascorbic acid",product:"Vitamin C Serum",brand:"Skinceuticals",category:"Skin Care",disc:false},
+  {chemical:"Glycerin",product:"Moisturizing Lotion",brand:"Cetaphil",category:"Skin Care",disc:false},
+  {chemical:"Petrolatum",product:"Lip Balm",brand:"Vaseline",category:"Lip Care",disc:false},
+  {chemical:"Mineral oil",product:"Baby Oil",brand:"Johnson's",category:"Skin Care",disc:false},
+  {chemical:"Denatured alcohol",product:"Setting Spray",brand:"Urban Decay",category:"Makeup Finisher",disc:false},
+];
+
+function classifyChemical(chem){
+  const c=chem.toLowerCase();
+  for(const k of ALLERGEN_KW) if(c.includes(k)) return "flagged";
+  for(const k of ACTIVE_KW) if(c.includes(k)) return "active";
+  return "base";
+}
+
+function skinGuidance(chem){
+  const c=chem.toLowerCase();
+  const tips=[];
+  if(OILY_GOOD.some(k=>c.includes(k))) tips.push("good for oily");
+  if(DRY_GOOD.some(k=>c.includes(k))) tips.push("good for dry");
+  if(SENS_GOOD.some(k=>c.includes(k))) tips.push("good for sensitive");
+  if(OILY_BAD.some(k=>c.includes(k))) tips.push("avoid if oily");
+  if(DRY_BAD.some(k=>c.includes(k))) tips.push("avoid if dry");
+  if(SENS_BAD.some(k=>c.includes(k))) tips.push("avoid if sensitive");
+  return tips.length ? tips.join(", ") : "—";
+}
+
+function doSearch(){
+  const q=document.getElementById('srch').value.toLowerCase();
+  const cat=document.getElementById('cat').value.toLowerCase();
+  const safety=document.getElementById('safety').value;
+  let filtered=SAMPLE.filter(r=>{
+    const matchQ=!q||r.chemical.toLowerCase().includes(q)||r.product.toLowerCase().includes(q)||r.brand.toLowerCase().includes(q);
+    const matchCat=!cat||r.category.toLowerCase().includes(cat);
+    const cls=classifyChemical(r.chemical);
+    const matchSafety=!safety||cls===safety;
+    return matchQ&&matchCat&&matchSafety;
+  });
+  const tbody=document.getElementById('tbody');
+  const noRes=document.getElementById('no-res');
+  const rc=document.getElementById('result-count');
+  tbody.innerHTML='';
+  if(filtered.length===0){
+    noRes.style.display='block';
+    rc.textContent='';
+    return;
+  }
+  noRes.style.display='none';
+  rc.textContent='Showing '+filtered.length+' result'+(filtered.length===1?'':'s')+' (sample of full 114,635-record dataset)';
+  filtered.forEach(r=>{
+    const cls=classifyChemical(r.chemical);
+    const pill=cls==='flagged'?'<span class="pill pill-red">Allergen</span>':cls==='active'?'<span class="pill pill-green">Active</span>':'<span class="pill pill-amber">Base</span>';
+    const status=r.disc?'<span class="pill pill-red">Discontinued</span>':'<span class="pill pill-green">Active</span>';
+    const tr=document.createElement('tr');
+    tr.innerHTML=`<td style="font-weight:500">${r.chemical}</td><td style="color:var(--color-text-secondary)">${r.product}<br><span style="font-size:11px;color:var(--color-text-tertiary)">${r.brand}</span></td><td style="color:var(--color-text-secondary);font-size:12px">${r.category}</td><td>${pill}</td><td style="font-size:12px;color:var(--color-text-secondary)">${skinGuidance(r.chemical)}</td><td>${status}</td>`;
+    tbody.appendChild(tr);
+  });
+}
+
+function showPage(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  event.target.classList.add('active');
+  if(id==='data') doSearch();
+}
+
+doSearch();
+</script>
