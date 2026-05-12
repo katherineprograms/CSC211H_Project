@@ -1,0 +1,2 @@
+set(__QT_DEPLOY_TARGET_CSC211H_Project_FILE /Users/katherinesanchez/Documents/CSC211H/Honors Project CSC 211H/CSC211H_Project/build/Qt_6_11_0_for_macOS-Debug/CSC211H_Project.app/Contents/MacOS/CSC211H_Project)
+set(__QT_DEPLOY_TARGET_CSC211H_Project_TYPE EXECUTABLE)

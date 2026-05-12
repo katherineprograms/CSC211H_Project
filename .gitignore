@@ -1,0 +1,10 @@
+# Qt user-specific settings
+*.user
+
+# CMake build directories (the folders that start with 'build-')
+build-*/
+
+# Compiled binaries and objects
+*.o
+*.obj
+*.exe
