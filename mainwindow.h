@@ -16,9 +16,15 @@
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QGroupBox>
+#include <QDialog>
+#include <QScrollArea>
+#include <QFileDialog>
+#include <QTextStream>
+#include <QMessageBox>
+#include <QFrame>
 #include "csvparser.h"
 #include "ingredient.h"
-#include "SkinScorer.h"
+#include "skinscorer.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -35,7 +41,14 @@ public:
 private slots:
     void onSearchClicked();
     void onSkinTypeChanged();
-    void onAnalyzeClicked();    // runs full scoring pipeline
+    void onAnalyzeClicked();
+    void onResetClicked();
+    void onExportClicked();
+    void onAboutClicked();
+    void onScoringInfoClicked();
+    void onRowClicked(int row, int col);
+    void onCategoryFilter(const QString& category);
+    void onViewChartClicked();
 
 private:
     Ui::MainWindow *ui;
@@ -45,10 +58,12 @@ private:
     SkinScorer scorer;
     QVector<Ingredient*>      ingredients;
     QVector<ScoredIngredient> lastScored;
+    bool analysisRun = false;
 
     // ── Profile UI ──
     QWidget     *centralWidget;
     QLabel      *headerLabel;
+    QLabel      *subtitleLabel;
     QComboBox   *skinTypeDropdown;
     QSlider     *acneSlider;
     QSlider     *drynessSlider;
@@ -61,14 +76,27 @@ private:
     QLineEdit   *searchBox;
     QPushButton *searchButton;
     QPushButton *analyzeButton;
+    QPushButton *resetButton;
+    QPushButton *exportButton;
+    QPushButton *aboutButton;
+    QPushButton *scoringInfoButton;
+
+    // ── Filter buttons ──
+    QPushButton *filterAll;
+    QPushButton *filterLip;
+    QPushButton *filterHair;
+    QPushButton *filterNail;
+    QPushButton *filterEye;
+    QPushButton *filterSkin;
 
     // ── Results UI ──
     QTableWidget *resultsTable;
     QLabel       *statusLabel;
+    QLabel       *resultCountLabel;
     QLabel       *suggestion1;
     QLabel       *suggestion2;
     QLabel       *suggestion3;
-    QChartView *chartView;
+    QChartView   *chartView;
 
     // ── Helpers ──
     void setupUI();
@@ -76,7 +104,10 @@ private:
     void populateScoredTable(const QVector<ScoredIngredient>& scored);
     void updateSuggestions(const QVector<ScoredIngredient>& scored);
     void updateChart(const QVector<ScoredIngredient>& scored);
+    void setActiveFilter(QPushButton* active);
     SkinProfile getCurrentProfile();
+
+    QString btnStyle(QString bg, QString hover);
 };
 
 #endif // MAINWINDOW_H

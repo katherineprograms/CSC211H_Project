@@ -41,7 +41,6 @@ QVector<ScoredIngredient> SkinScorer::scoreAll(
     for (const auto& r : records)
         results.append(score(r, profile));
 
-    // Sort highest score first
     std::sort(results.begin(), results.end(),
               [](const ScoredIngredient& a, const ScoredIngredient& b) {
                   return a.overallScore.getValue() > b.overallScore.getValue();
@@ -53,16 +52,47 @@ QVector<ScoredIngredient> SkinScorer::scoreAll(
 // ── Safety score 1-10 ──
 int SkinScorer::calcSafetyScore(const IngredientRecord& record) {
     QString chemLower = record.chemicalName.toLower();
-    int score = 8;                          // assume safe to start
 
-    if (record.isDiscontinued) score -= 2;  // discontinued = riskier
+    // Start at 7 — neutral assumption
+    int score = 7;
 
-    for (const QString& kw : allergenKeywords) {
-        if (chemLower.contains(kw)) {
-            score -= 4;                     // CSCP flagged = heavy penalty
-            break;
-        }
-    }
+    // Discontinued = automatic penalty
+    if (record.isDiscontinued) score -= 2;
+
+    // Tier 1 — most dangerous (CSCP carcinogens/reproductive toxins)
+    QStringList tier1 = {
+        "formaldehyde", "lead", "mercury", "asbestos",
+        "arsenic", "chromium hexavalent", "cadmium",
+        "coal tar", "estragole", "carbon black", "styrene"
+    };
+    for (const QString& kw : tier1)
+        if (chemLower.contains(kw)) { score = 1; return score; }
+
+    // Tier 2 — CSCP allergen list (moderate-severe)
+    for (const QString& kw : allergenKeywords)
+        if (chemLower.contains(kw)) { score -= 3; break; }
+
+    // Tier 3 — common irritants (mild penalty)
+    QStringList tier3 = {
+        "paraben", "fragrance", "parfum", "sulfate",
+        "phthalate", "triclosan", "oxybenzone",
+        "butylated hydroxytoluene", "petroleum",
+        "mineral oil", "talc", "nickel"
+    };
+    for (const QString& kw : tier3)
+        if (chemLower.contains(kw)) { score -= 1; break; }
+
+    // Tier 4 — well-known safe ingredients (boost)
+    QStringList safe = {
+        "water", "aqua", "glycerin", "aloe vera",
+        "tocopherol", "panthenol", "allantoin",
+        "niacinamide", "hyaluronic acid", "ceramide",
+        "zinc oxide", "dimethicone", "stearic acid",
+        "cetyl alcohol", "shea butter", "jojoba",
+        "retinol", "ascorbic acid", "squalane"
+    };
+    for (const QString& kw : safe)
+        if (chemLower.contains(kw)) { score += 2; break; }
 
     return std::max(1, std::min(10, score));
 }
@@ -73,7 +103,7 @@ int SkinScorer::calcEffectivenessScore(const IngredientRecord& record,
 {
     QString chemLower = record.chemicalName.toLower();
     QString skin      = profile.skinType.toLower();
-    int score         = 5;  // neutral start
+    int score         = 5;
 
     QVector<QString>* beneficial = nullptr;
     QVector<QString>* avoid      = nullptr;
@@ -86,6 +116,20 @@ int SkinScorer::calcEffectivenessScore(const IngredientRecord& record,
         avoid      = &sensitiveAvoid; }
     else if (skin == "combination") { beneficial = &comboBeneficial;
         avoid      = &comboAvoid; }
+    else {
+        static QVector<QString> allBeneficial = {
+            "glycerin", "aloe", "panthenol", "niacinamide",
+            "hyaluronic", "ceramide", "zinc oxide", "allantoin",
+            "tocopherol", "dimethicone", "stearic"
+        };
+        static QVector<QString> allAvoid = {
+            "formaldehyde", "paraben", "sulfate",
+            "fragrance", "parfum", "lead", "mercury",
+            "coal tar", "asbestos"
+        };
+        beneficial = &allBeneficial;
+        avoid      = &allAvoid;
+    }
 
     if (beneficial)
         for (const QString& kw : *beneficial)
@@ -95,19 +139,19 @@ int SkinScorer::calcEffectivenessScore(const IngredientRecord& record,
         for (const QString& kw : *avoid)
             if (chemLower.contains(kw)) { score -= 3; break; }
 
-    // Boost from concern sliders
+    // Slider boosts
     if (profile.acneLevel > 5)
         if (chemLower.contains("salicylic") ||
             chemLower.contains("niacinamide")) score += 2;
 
     if (profile.drynessLevel > 5)
         if (chemLower.contains("hyaluronic") ||
-            chemLower.contains("ceramide"))   score += 2;
+            chemLower.contains("ceramide"))    score += 2;
 
     if (profile.hyperpigLevel > 5)
         if (chemLower.contains("niacinamide") ||
             chemLower.contains("ascorbic") ||
-            chemLower.contains("kojic"))      score += 2;
+            chemLower.contains("kojic"))       score += 2;
 
     return std::max(1, std::min(10, score));
 }
@@ -121,20 +165,20 @@ QVector<QString> SkinScorer::getFormulationSuggestions(
 
     for (const auto& s : scored) {
         int v = s.overallScore.getValue();
-        if      (v >= 7) safe++;
-        else if (v >= 4) moderate++;
+        if      (v >= 6) safe++;       // lowered threshold
+        else if (v >= 3) moderate++;
         else             danger++;
     }
 
     int total = scored.size();
 
     suggestions.append(
-        QString("✅ Safest Option: %1% of ingredients score 7+/10 "
-                "and are recommended for your skin type.")
+        QString("✅ Safest Option: %1% of ingredients score 6+/10 "
+                "and are suitable for your skin type.")
             .arg(total > 0 ? (safe * 100 / total) : 0));
 
     suggestions.append(
-        QString("⚠️ Moderate Option: %1 ingredients are moderate risk "
+        QString("⚠️ Moderate Option: %1 ingredients carry moderate risk "
                 "— patch test before full use.")
             .arg(moderate));
 
