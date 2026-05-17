@@ -34,7 +34,7 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    setWindowTitle("Cosmetic Ingredient Analyzer — CSC 211H");
+    setWindowTitle("Cosmetic Ingredient Analyzer CSC 211H");
     resize(1100, 800);
 
     setupUI();
@@ -91,7 +91,7 @@ void MainWindow::setupUI() {
         "background: transparent;");
 
     subtitleLabel = new QLabel(
-        "Powered by the California Safe Cosmetics Program Database  •  CSC 211H Honors", this);
+        "Powered by the California Safe Cosmetics Program Database", this);
     subtitleLabel->setAlignment(Qt::AlignCenter);
     subtitleLabel->setStyleSheet(
         "font-size: 11px; color: rgba(255,255,255,0.8);"
@@ -321,7 +321,7 @@ void MainWindow::setupUI() {
                                 "border-left: 4px solid %1; }").arg(borderCol));
         QVBoxLayout *cl = new QVBoxLayout(card);
         cl->setContentsMargins(8, 6, 8, 6);
-        lbl = new QLabel("Run ⚗️ Analyze to see suggestions.", this);
+        lbl = new QLabel("Run '⚗️ Analyze' to see suggestions.", this);
         lbl->setWordWrap(true);
         lbl->setStyleSheet(
             "font-size: 11px; border: none; background: transparent;");
@@ -412,6 +412,7 @@ void MainWindow::onAnalyzeClicked() {
     QVector<IngredientRecord> subset =
         parser.getRecords().mid(0, 500);
     lastScored = scorer.scoreAll(subset, profile);
+    analysisRun = true;
 
     populateScoredTable(lastScored);
     updateSuggestions(lastScored);
@@ -420,7 +421,7 @@ void MainWindow::onAnalyzeClicked() {
     // Enable the chart button now that we have data
     if (auto* btn = findChild<QPushButton*>("viewChartBtn"))
         btn->setEnabled(true);
-    statusLabel->setText("✅ Analysis complete — " +
+    statusLabel->setText("✅ Analysis complete  " +
                          QString::number(lastScored.size()) +
                          " ingredients scored for " + profile.skinType + " skin.");
 }
@@ -537,10 +538,10 @@ void MainWindow::onSearchClicked() {
 void MainWindow::onSkinTypeChanged() {
     statusLabel->setText("Skin type: " +
                          skinTypeDropdown->currentText() +
-                         " — click ⚗️ Analyze to score ingredients.");
+                         "   click ⚗️ Analyze to score ingredients.");
 }
 // ─────────────────────────────────────────
-// updateChart — top 10 ingredients bar chart
+// updateChart ~ top 10 ingredients bar chart
 // ─────────────────────────────────────────
 void MainWindow::updateChart(const QVector<ScoredIngredient>& scored) {
     if (scored.isEmpty()) return;
@@ -639,12 +640,12 @@ void MainWindow::onResetClicked() {
     setActiveFilter(filterAll);
     analysisRun = false;
     populateTable(parser.getRecords().mid(0, 100));
-    suggestion1->setText("Run ⚗️ Analyze to see suggestions.");
-    suggestion2->setText("");
-    suggestion3->setText("");
+    suggestion1->setText("Run '⚗️ Analyze' to see suggestions.");
+    suggestion2->setText("Run '⚗️ Analyze' to see suggestions.");
+    suggestion3->setText("Run '⚗️ Analyze' to see suggestions.");
     resultCountLabel->setText("Showing 100 of " +
                               QString::number(parser.getRecordCount()) + " records");
-    statusLabel->setText("↺  Reset — showing first 100 records.");
+    statusLabel->setText("↺  Reset ~ showing first 100 records.");
 }
 
 // ─────────────────────────────────────────
@@ -684,25 +685,71 @@ void MainWindow::onExportClicked() {
 // ─────────────────────────────────────────
 void MainWindow::onAboutClicked() {
     QMessageBox about(this);
-    about.setWindowTitle("About — Cosmetic Ingredient Analyzer");
+    about.setWindowTitle("About — SkinFirst");
     about.setTextFormat(Qt::RichText);
     about.setText(
-        "<h2 style='color:#c4785a'>🧴 Cosmetic Ingredient Analyzer</h2>"
-        "<p><b>CSC 211H Honors Project</b> — Katherine Sanchez</p><br>"
-        "<p>This application loads <b>114,635 records</b> from the "
-        "<b>California Safe Cosmetics Program (CSCP)</b> database — "
-        "the only US government registry of harmful cosmetic chemicals.</p><br>"
-        "<p>Ingredients are scored using a weighted formula:<br>"
-        "<b>Overall = Safety (60%) + Effectiveness (40%)</b></p><br>"
-        "<p>Built with <b>C++ / Qt 6</b> · CMake · Qt Charts</p><br>"
-        "<p style='color:#888;font-size:10px'>"
-        "Data source: California Department of Public Health<br>"
-        "data.ca.gov/dataset/chemicals-in-cosmetics</p>"
+        "<h2 style='color:#c4785a; margin-bottom:4px;'>"
+        "  SkinFirst: Cosmetic Ingredient Analyzer</h2>"
+
+        "<p style='color:#888; font-size:11px; margin-top:0;'>"
+        "CSC 211H Honors Project &nbsp;·&nbsp; "
+         "Katherine Sanchez</p>"
+
+        "<hr style='border:0.5px solid #e0d0c8; margin:8px 0;'/>"
+
+        "<p style='font-size:12px; line-height:1.6;'>"
+        "Every day, millions of people apply cosmetic products "
+        "without knowing what is actually in them. Ingredient lists "
+        "are long, technical, and nearly impossible to understand. "
+        "The communities most affected are often the ones with "
+        "the least access to safety information."
+        "</p>"
+
+        "<p style='font-size:12px; line-height:1.6;'>"
+        "This app was built for <b>them</b>. For the person reading "
+        "the back of a lipstick at the dollar store. For the family "
+        "buying affordable hair products without knowing they contain "
+        "flagged carcinogens. For anyone who deserves to know what "
+        "they are putting on their body."
+        "</p>"
+
+        "<hr style='border:0.5px solid #e0d0c8; margin:8px 0;'/>"
+
+        "<p style='font-size:12px; line-height:1.6;'>"
+        "<b>What this app does:</b><br>"
+        "Loads <b>114,635 real product records</b> from the "
+        "California Safe Cosmetics Program, the only US government "
+        "registry that requires companies to report harmful cosmetic "
+        "chemicals. Every ingredient is scored for safety and "
+        "skin-type effectiveness so you can make informed decisions "
+        "about the products you use every day."
+        "</p>"
+
+        "<p style='font-size:12px; line-height:1.6;'>"
+        "<b style='color:#4CAF50;'>✅ Safe ingredients</b> are "
+        "highlighted in green. "
+        "<b style='color:#FF9800;'>⚠️ Moderate risk</b> ingredients "
+        "are shown in orange. "
+        "<b style='color:#F44336;'>❌ High risk</b> chemicals   "
+        "(like formaldehyde, lead, and coal tar) are flagged in red "
+        "so you know exactly what to avoid."
+        "</p>"
+
+        "<hr style='border:0.5px solid #e0d0c8; margin:8px 0;'/>"
+
+        "<p style='font-size:11px; color:#888; line-height:1.6;'>"
+        "Built with <b>C++ / Qt 6</b> &nbsp;·&nbsp; CMake "
+        "&nbsp;·&nbsp; Qt Charts<br>"
+        "Data: California Department of Public Health<br>"
+        "data.ca.gov/dataset/chemicals-in-cosmetics"
+        "</p>"
         );
     about.setStyleSheet(
-        "QMessageBox { background: white; }"
+        "QMessageBox { background: white; min-width: 460px; }"
         "QPushButton { background: #c4785a; color: white;"
-        "padding: 6px 18px; border-radius: 4px; font-weight: bold; }");
+        "padding: 8px 24px; border-radius: 6px;"
+        "font-weight: bold; font-size: 12px; border: none; }"
+        "QPushButton:hover { background: #9c5a3e; }");
     about.exec();
 }
 
@@ -905,7 +952,7 @@ void MainWindow::onViewChartClicked() {
 
     // Warning header
     QLabel *titleLbl = new QLabel(
-        "⚠️  Ingredients to Avoid — " +
+        "⚠️  Ingredients to Avoid  " +
             skinTypeDropdown->currentText() + " Skin", dlg);
     titleLbl->setAlignment(Qt::AlignCenter);
     titleLbl->setStyleSheet(
@@ -1041,7 +1088,7 @@ void MainWindow::onScoringInfoClicked() {
 
     makeSection("🛡️", "Safety Score (60% of total)",
                 "#fae8e0", "#c4785a", {
-                    "Starts at 7 out of 10 — most ingredients assumed safe",
+                    "Starts at 7 out of 10 ~ most ingredients assumed safe",
                     "Severe chemicals (formaldehyde, lead, mercury, coal tar) → score drops to 1",
                     "CSCP flagged allergens → lose 3 points",
                     "Mild irritants (parabens, sulfates, fragrance) → lose 1 point",
@@ -1051,7 +1098,7 @@ void MainWindow::onScoringInfoClicked() {
 
     makeSection("✨", "Effectiveness Score (40% of total)",
                 "#eaf3de", "#3b6d11", {
-                    "Starts at 5 out of 10 — neutral for all skin types",
+                    "Starts at 5 out of 10 ~ neutral for all skin types",
                     "Ingredients known to benefit your skin type → gain 3 points",
                     "Ingredients known to irritate your skin type → lose 3 points",
                     "Slider boosts: high Acne level boosts salicylic acid and niacinamide",
@@ -1061,9 +1108,9 @@ void MainWindow::onScoringInfoClicked() {
 
     makeSection("🎨", "Score Colors in the Table",
                 "#eeedfe", "#534ab7", {
-                    "🟢 Green  (7-10) Safe and recommended for your profile",
-                    "🟠 Orange (4-6)  Moderate risk, patch test recommended",
-                    "🔴 Red    (1-3)  High risk, avoid if possible"
+                    "🟢 GREEN  (7-10) Safe and recommended for your profile",
+                    "🟠 ORANGE (4-6)  Moderate risk, patch test recommended",
+                    "🔴 RED    (1-3)  High risk, avoid if possible"
                 });
 
     // Close button

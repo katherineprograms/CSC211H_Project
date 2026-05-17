@@ -42,7 +42,7 @@ bool CSVParser :: loadFile(const QString& filePath) {
 
         QStringList columns = splitCSVLine(line);
 
-        // Your CSV has 23 columns — skip malformed rows
+        // Your CSV has 23 columns, skip malformed rows
         if (columns.size() < 19) {
             skipped++;
             qDebug() << "Skipping malformed row at line" << lineNumber
@@ -96,7 +96,7 @@ IngredientRecord CSVParser::parseRow(const QStringList& col) {
     r.brandName       = col[7];
     r.primaryCategory = col[9];
     r.subCategory     = col[11];
-    r.casNumber       = col[13];  // always QString — never convert to int
+    r.casNumber       = col[13];  // always QString never convert to int
     r.chemicalName    = col[15];
     r.dateReported    = col[16];
     r.isDiscontinued  = !col[18].trimmed().isEmpty();
@@ -105,7 +105,7 @@ IngredientRecord CSVParser::parseRow(const QStringList& col) {
 }
 
 // ------------------------------------------------------------
-// splitCSVLine — handles quoted fields that contain commas
+// splitCSVLine handles quoted fields that contain commas
 // e.g. "Lip Color, Lipstick" should be one field, not two
 // ------------------------------------------------------------
 QStringList CSVParser::splitCSVLine(const QString& line) {
